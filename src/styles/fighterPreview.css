@@ -1,0 +1,39 @@
+.fighter-preview___root {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 250px;
+}
+
+.fighter-preview___right {
+    text-align: center;
+    align-items: flex-end;
+    height: 400px;
+    max-width: 150px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    background: #ffdfa7;
+    margin: 80px;
+    border: 5px solid #ca9650;
+}
+
+.fighter-preview___left {
+    text-align: center;
+    align-items: flex-start;
+    height: 400px;
+    max-width: 150px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    background: #ffdfa7;
+    margin: 80px;
+    border: 5px solid #ca9650;
+}
+
+.fighter-preview___description {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: red;
+}
