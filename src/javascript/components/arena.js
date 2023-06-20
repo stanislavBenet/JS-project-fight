@@ -1,4 +1,5 @@
 import createElement from '../helpers/domHelper';
+import { fight, getDamage } from './fight';
 import { createFighterImage } from './fighterPreview';
 
 function createFighter(fighter, position) {
@@ -19,6 +20,7 @@ function createFighters(firstFighter, secondFighter) {
     const secondFighterElement = createFighter(secondFighter, 'right');
 
     battleField.append(firstFighterElement, secondFighterElement);
+
     return battleField;
 }
 
@@ -56,12 +58,16 @@ function createArena(selectedFighters) {
     const fighters = createFighters(...selectedFighters);
 
     arena.append(healthIndicators, fighters);
+
     return arena;
 }
 
 export default function renderArena(selectedFighters) {
     const root = document.getElementById('root');
     const arena = createArena(selectedFighters);
+    const attackerHealth = selectedFighters[0].health;
+    const defenderHealth = selectedFighters[1].health;
+    const onPush = event => getDamage(attackerHealth, defenderHealth, event, ...selectedFighters);
 
     root.innerHTML = '';
     root.append(arena);
@@ -69,4 +75,6 @@ export default function renderArena(selectedFighters) {
     // todo:
     // - start the fight
     // - when fight is finished show winner
+    document.body.addEventListener('keydown', onPush, false);
+    fight(...selectedFighters).then((data) => console.log('Победила дружба', data));
 }

@@ -8,7 +8,5 @@ export default function createElement({ tagName, className, attributes = {} }) {
 
     Object.keys(attributes).forEach(key => element.setAttribute(key, attributes[key]));
 
-    
-
     return element;
 }
