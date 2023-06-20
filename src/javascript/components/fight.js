@@ -1,68 +1,71 @@
 import controls from '../../constants/controls';
 import _ from 'lodash';
 
-export async function fight(firstFighter, secondFighter) {
+export async function fight(firstFighterHealth, secondFighterHealth, event, firstFighter, secondFighter) {
     return new Promise((resolve, reject) => {
-        if (firstFighter.health <= 0) {
-            resolve('ok');
+        const healthBarfirstFighter = document.getElementById('left-fighter-indicator');
+        const healthBarsecondFighter = document.getElementById('right-fighter-indicator');
+
+        if (event.code === controls.PlayerTwoBlock) {
+            secondFighter.block = true;
         }
-        if (secondFighter.health <= 0) {
-            resolve('huypk');
+        if (event.code === controls.PlayerOneBlock) {
+            firstFighter.block = true;
+        }
+
+        const onClick = e => {
+            if (e.code === controls.PlayerTwoBlock) {
+                secondFighter.block = false;
+            }
+            if (e.code === controls.PlayerOneBlock) {
+                firstFighter.block = false;
+            }
+        };
+
+        document.body.addEventListener('keyup', onClick, false);
+
+        if (
+            event.code === controls.PlayerOneAttack &&
+            !secondFighter.block &&
+            !firstFighter.block &&
+            firstFighter.health > 0
+        ) {
+            let damage = getDamage(firstFighter, secondFighter);
+            if (damage <= 0) {
+                damage = 0;
+            }
+            if (secondFighter.health - damage >= 0) {
+                secondFighter.health -= damage;
+                healthBarsecondFighter.style.width = `${(secondFighter.health * 100) / secondFighterHealth}%`;
+            } else {
+                secondFighter.health = 0;
+                healthBarsecondFighter.style.width = `0%`;
+            }
+        }
+
+        if (
+            event.code === controls.PlayerTwoAttack &&
+            !firstFighter.block &&
+            !secondFighter.block &&
+            secondFighter.health > 0
+        ) {
+            let damage = getDamage(secondFighter, firstFighter);
+            if (damage <= 0) {
+                damage = 0;
+            }
+            if (firstFighter.health - damage >= 0) {
+                firstFighter.health -= damage;
+                healthBarfirstFighter.style.width = `${(firstFighter.health * 100) / firstFighterHealth}%`;
+            } else {
+                firstFighter.health = 0;
+                healthBarfirstFighter.style.width = `0%`;
+            }
         }
     });
 }
 
-export function getDamage(attackerHealth, defenderHealth, event, attacker, defender) {
-    const healthBarAttacker = document.getElementById('left-fighter-indicator');
-    const healthBarDefender = document.getElementById('right-fighter-indicator');
-
-    if (event.code === controls.PlayerTwoBlock) {
-        defender.block = true;
-    }
-    if (event.code === controls.PlayerOneBlock) {
-        attacker.block = true;
-    }
-
-    const onClick = e => {
-        if (e.code === controls.PlayerTwoBlock) {
-            defender.block = false;
-        }
-        if (e.code === controls.PlayerOneBlock) {
-            attacker.block = false;
-        }
-    };
-
-    document.body.addEventListener('keyup', onClick, false);
-
-    if (event.code === controls.PlayerOneAttack && !defender.block && !attacker.block) {
-        let damage = getHitPower(attacker) - getBlockPower(defender);
-        if (damage <= 0) {
-            damage = 0;
-        }
-        if (defender.health - damage >= 0) {
-            defender.health -= damage;
-            healthBarDefender.style.width = `${(defender.health * 100) / defenderHealth}%`;
-        } else {
-            defender.health = 0;
-            healthBarDefender.style.width = `0%`;
-        }
-        console.log(`${(defender.health * 100) / defenderHealth}%`, defenderHealth, defender.health);
-    }
-
-    if (event.code === controls.PlayerTwoAttack && !attacker.block && !defender.block) {
-        let damage = getHitPower(defender) - getBlockPower(attacker);
-        if (damage <= 0) {
-            damage = 0;
-        }
-        if (attacker.health - damage >= 0) {
-            attacker.health -= damage;
-            healthBarAttacker.style.width = `${(attacker.health * 100) / attackerHealth}%`;
-        } else {
-            attacker.health = 0;
-            healthBarAttacker.style.width = `0%`;
-        }
-        console.log(healthBarAttacker.style.width);
-    }
+export function getDamage(attacker, defender) {
+    return getHitPower(attacker) - getBlockPower(defender);
 }
 
 export function getHitPower(fighter) {

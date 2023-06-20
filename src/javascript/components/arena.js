@@ -67,7 +67,7 @@ export default function renderArena(selectedFighters) {
     const arena = createArena(selectedFighters);
     const attackerHealth = selectedFighters[0].health;
     const defenderHealth = selectedFighters[1].health;
-    const onPush = event => getDamage(attackerHealth, defenderHealth, event, ...selectedFighters);
+    const onPush = event => fight(attackerHealth, defenderHealth, event, ...selectedFighters);
 
     root.innerHTML = '';
     root.append(arena);
@@ -76,5 +76,4 @@ export default function renderArena(selectedFighters) {
     // - start the fight
     // - when fight is finished show winner
     document.body.addEventListener('keydown', onPush, false);
-    fight(...selectedFighters).then((data) => console.log('Победила дружба', data));
 }
