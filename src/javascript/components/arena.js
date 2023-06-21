@@ -1,5 +1,5 @@
 import createElement from '../helpers/domHelper';
-import { fight, getDamage } from './fight';
+import { fight } from './fight';
 import { createFighterImage } from './fighterPreview';
 
 function createFighter(fighter, position) {
