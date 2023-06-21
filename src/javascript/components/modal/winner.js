@@ -26,5 +26,5 @@ export function showWinnerModal(fighter) {
     const title = fighter.name + ' is WINNER!!!';
     const bodyElement = createFighterWinner(fighter);
 
-    showModal({ title, bodyElement })   ;
+    showModal({ title, bodyElement });
 }

@@ -1,7 +1,7 @@
 import createElement from '../helpers/domHelper';
 import { fight } from './fight';
 import { createFighterImage } from './fighterPreview';
-
+import { showWinnerModal } from './modal/winner';
 function createFighter(fighter, position) {
     const imgElement = createFighterImage(fighter);
     const positionClassName = position === 'right' ? 'arena___right-fighter' : 'arena___left-fighter';
@@ -67,13 +67,8 @@ export default function renderArena(selectedFighters) {
     const arena = createArena(selectedFighters);
     const attackerHealth = selectedFighters[0].health;
     const defenderHealth = selectedFighters[1].health;
-    const onPush = event => fight(attackerHealth, defenderHealth, event, ...selectedFighters);
-
     root.innerHTML = '';
     root.append(arena);
 
-    // todo:
-    // - start the fight
-    // - when fight is finished show winner
-    document.body.addEventListener('keydown', onPush, false);
+    fight(attackerHealth, defenderHealth, ...selectedFighters).then(response => showWinnerModal(response));
 }

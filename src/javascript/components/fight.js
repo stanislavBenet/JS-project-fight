@@ -1,126 +1,137 @@
 import controls from '../../constants/controls';
 import _ from 'lodash';
-import { showWinnerModal } from './modal/winner';
 
-export async function fight(firstFighterHealth, secondFighterHealth, event, firstFighter, secondFighter) {
+export async function fight(firstFighterHealth, secondFighterHealth, firstFighter, secondFighter) {
     return new Promise(resolve => {
         const healthBarfirstFighter = document.getElementById('left-fighter-indicator');
         const healthBarsecondFighter = document.getElementById('right-fighter-indicator');
-        const pressed = new Set();
+        const allDownKeys = new Set();
+        let checkTenSecFirst = true;
+        let checkTenSecSecond = true;
 
-        if (event.code === controls.PlayerTwoBlock) {
-            secondFighter.block = true;
-        }
-        if (event.code === controls.PlayerOneBlock) {
-            firstFighter.block = true;
-        }
-
-        const onClick = e => {
-            if (e.code === controls.PlayerTwoBlock) {
-                secondFighter.block = false;
-            }
-            if (e.code === controls.PlayerOneBlock) {
-                firstFighter.block = false;
-            }
-        };
-
-        document.body.addEventListener('keyup', onClick, false);
-
-        const onPushFirstCriticalButton = e => {
-            pressed.add(e.code);
+        const onCriticalFirstAttack = event => {
+            allDownKeys.add(event.code);
+            if (allDownKeys.size != controls.PlayerOneCriticalHitCombination.length) return;
             for (let code of controls.PlayerOneCriticalHitCombination) {
-                if (!pressed.has(code)) {
-                    return;
+                if (!allDownKeys.has(code)) return;
+            }
+            console.log(checkTenSecFirst);
+            if (checkTenSecFirst) {
+                checkTenSecFirst = !checkTenSecFirst;
+                setTimeout(() => (checkTenSecFirst = true), 10000);
+                let damage = firstFighter.attack * 2;
+                if (damage <= 0) {
+                    damage = 0;
                 }
-            }
-            pressed.clear();
-
-            let damage = firstFighter.attack * 2;
-            if (damage <= 0) {
-                damage = 0;
-            }
-
-            if (secondFighter.health - damage > 0) {
-                secondFighter.health -= damage;
-                healthBarsecondFighter.style.width = `${(secondFighter.health * 100) / secondFighterHealth}%`;
-                console.log(damage, secondFighter.health);
+                if (secondFighter.health - damage > 0) {
+                    secondFighter.health -= damage;
+                    console.log(secondFighter.health, damage, secondFighter.health - damage);
+                    healthBarsecondFighter.style.width = `${(secondFighter.health * 100) / secondFighterHealth}%`;
+                } else {
+                    secondFighter.health = 0;
+                    healthBarsecondFighter.style.width = `0%`;
+                    resolve(firstFighter);
+                }
+                allDownKeys.clear();
             } else {
-                secondFighter.health = 0;
-                healthBarsecondFighter.style.width = `0%`;
-                resolve(showWinnerModal(firstFighter));
+                return;
             }
+            allDownKeys.clear();
         };
 
-        const onPushSecondCriticalButton = e => {
-            pressed.add(e.code);
+        const onCriticalSecondAttack = event => {
+            allDownKeys.add(event.code);
+            if (allDownKeys.size != controls.PlayerTwoCriticalHitCombination.length) return;
             for (let code of controls.PlayerTwoCriticalHitCombination) {
-                if (!pressed.has(code)) {
-                    return;
+                if (!allDownKeys.has(code)) return;
+            }
+            console.log(checkTenSecSecond);
+            if (checkTenSecSecond) {
+                checkTenSecSecond = !checkTenSecSecond;
+                setTimeout(() => (checkTenSecSecond = true), 10000);
+                let damage = secondFighter.attack * 2;
+                if (damage <= 0) {
+                    damage = 0;
+                }
+                if (firstFighter.health - damage > 0) {
+                    firstFighter.health -= damage;
+                    healthBarfirstFighter.style.width = `${(firstFighter.health * 100) / firstFighterHealth}%`;
+                    console.log(firstFighter.health, damage, firstFighter.health - damage);
+                } else {
+                    firstFighter.health = 0;
+                    healthBarfirstFighter.style.width = `0%`;
+                    resolve(secondFighter);
+                }
+                allDownKeys.clear();
+            } else {
+                return;
+            }
+            allDownKeys.clear();
+        };
+
+        const onAttack = event => {
+            if (event.code === controls.PlayerTwoBlock) {
+                secondFighter.block = true;
+            }
+            if (event.code === controls.PlayerOneBlock) {
+                firstFighter.block = true;
+            }
+
+            const onClick = e => {
+                if (e.code === controls.PlayerTwoBlock) {
+                    secondFighter.block = false;
+                }
+                if (e.code === controls.PlayerOneBlock) {
+                    firstFighter.block = false;
+                }
+            };
+
+            document.body.addEventListener('keyup', onClick, false);
+
+            if (
+                event.code === controls.PlayerOneAttack &&
+                !secondFighter.block &&
+                !firstFighter.block &&
+                firstFighter.health > 0
+            ) {
+                let damage = getDamage(firstFighter, secondFighter);
+                if (damage <= 0) {
+                    damage = 0;
+                }
+                if (secondFighter.health - damage > 0) {
+                    secondFighter.health -= damage;
+                    healthBarsecondFighter.style.width = `${(secondFighter.health * 100) / secondFighterHealth}%`;
+                } else {
+                    secondFighter.health = 0;
+                    healthBarsecondFighter.style.width = `0%`;
+                    resolve(firstFighter);
                 }
             }
-            pressed.clear();
 
-            let damage = secondFighter.attack * 2;
-            if (damage <= 0) {
-                damage = 0;
-            }
-            if (firstFighter.health - damage > 0) {
-                firstFighter.health -= damage;
-                healthBarfirstFighter.style.width = `${(firstFighter.health * 100) / firstFighterHealth}%`;
-                console.log(damage, firstFighter.health);
-            } else {
-                firstFighter.health = 0;
-                healthBarfirstFighter.style.width = `0%`;
-                resolve(showWinnerModal(secondFighter));
+            if (
+                event.code === controls.PlayerTwoAttack &&
+                !firstFighter.block &&
+                !secondFighter.block &&
+                secondFighter.health > 0
+            ) {
+                let damage = getDamage(secondFighter, firstFighter);
+                if (damage <= 0) {
+                    damage = 0;
+                }
+                if (firstFighter.health - damage > 0) {
+                    firstFighter.health -= damage;
+                    healthBarfirstFighter.style.width = `${(firstFighter.health * 100) / firstFighterHealth}%`;
+                } else {
+                    firstFighter.health = 0;
+                    healthBarfirstFighter.style.width = `0%`;
+                    resolve(secondFighter);
+                }
             }
         };
-
-        const onLetOff = () => {
-            pressed.clear();
-        };
-        document.body.addEventListener('keydown', onPushFirstCriticalButton, false);
-        document.body.addEventListener('keydown', onPushSecondCriticalButton, false);
-        document.body.addEventListener('keyup', onLetOff, false);
-
-        if (
-            event.code === controls.PlayerOneAttack &&
-            !secondFighter.block &&
-            !firstFighter.block &&
-            firstFighter.health > 0
-        ) {
-            let damage = getDamage(firstFighter, secondFighter);
-            if (damage <= 0) {
-                damage = 0;
-            }
-            if (secondFighter.health - damage > 0) {
-                secondFighter.health -= damage;
-                healthBarsecondFighter.style.width = `${(secondFighter.health * 100) / secondFighterHealth}%`;
-            } else {
-                secondFighter.health = 0;
-                healthBarsecondFighter.style.width = `0%`;
-                resolve(showWinnerModal(firstFighter));
-            }
-        }
-
-        if (
-            event.code === controls.PlayerTwoAttack &&
-            !firstFighter.block &&
-            !secondFighter.block &&
-            secondFighter.health > 0
-        ) {
-            let damage = getDamage(secondFighter, firstFighter);
-            if (damage <= 0) {
-                damage = 0;
-            }
-            if (firstFighter.health - damage > 0) {
-                firstFighter.health -= damage;
-                healthBarfirstFighter.style.width = `${(firstFighter.health * 100) / firstFighterHealth}%`;
-            } else {
-                firstFighter.health = 0;
-                healthBarfirstFighter.style.width = `0%`;
-                resolve(showWinnerModal(secondFighter));
-            }
-        }
+        document.body.addEventListener('keydown', onAttack, false);
+        document.body.addEventListener('keydown', onCriticalFirstAttack, false);
+        document.body.addEventListener('keydown', onCriticalSecondAttack, false);
+        document.body.addEventListener('keyup', event => allDownKeys.delete(event.code));
     });
 }
 
@@ -135,5 +146,3 @@ export function getHitPower(fighter) {
 export function getBlockPower(fighter) {
     return fighter.defense * _.random(1, 2);
 }
-
-function criticalDamage(healthBarDefender, defenderHealth, attacker, defender) {}

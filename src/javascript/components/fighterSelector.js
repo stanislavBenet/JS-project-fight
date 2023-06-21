@@ -4,11 +4,13 @@ import versusImg from '../../../resources/versus.png';
 import { createFighterPreview } from './fighterPreview';
 import fighterService from '../services/fightersService';
 
-// const fighterDetailsMap = new Map();
+export const fighterDetailsMap = new Map();
 
 export async function getFighterInfo(fighterId) {
-    // get fighter info from fighterDetailsMap or from service and write it to fighterDetailsMap
     const targetFighter = await fighterService.getFighterDetails(fighterId);
+    for (const key in targetFighter) {
+        fighterDetailsMap.set(key, targetFighter[key]);
+    }
     return targetFighter;
 }
 
