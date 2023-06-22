@@ -40,7 +40,7 @@ export async function fight(firstFighterHealth, secondFighterHealth, firstFighte
                     secondFighter.health -= damage;
                     healthBarsecondFighter.style.width = `${(secondFighter.health * 100) / secondFighterHealth}%`;
                 } else {
-                    secondFighter.health = secondFighter.health.set(0);
+                    secondFighter.health = 0;
                     healthBarsecondFighter.style.width = `0%`;
                     resolve(firstFighter);
                 }
