@@ -60,7 +60,6 @@ export function createFightersSelector() {
         const firstFighter = playerOne ?? fighter;
         const secondFighter = playerOne ? playerTwo ?? fighter : playerTwo;
         selectedFighters = [firstFighter, secondFighter];
-
         renderSelectedFighters(selectedFighters);
     };
 }

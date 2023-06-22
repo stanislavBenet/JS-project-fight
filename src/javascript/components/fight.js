@@ -11,7 +11,6 @@ export async function fight(firstFighterHealth, secondFighterHealth, firstFighte
 
         const onCriticalFirstAttack = event => {
             allDownKeys.add(event.code);
-            if (allDownKeys.size != controls.PlayerOneCriticalHitCombination.length) return;
             for (let code of controls.PlayerOneCriticalHitCombination) {
                 if (!allDownKeys.has(code)) return;
             }
@@ -25,7 +24,6 @@ export async function fight(firstFighterHealth, secondFighterHealth, firstFighte
                 }
                 if (secondFighter.health - damage > 0) {
                     secondFighter.health -= damage;
-                    console.log(secondFighter.health, damage, secondFighter.health - damage);
                     healthBarsecondFighter.style.width = `${(secondFighter.health * 100) / secondFighterHealth}%`;
                 } else {
                     secondFighter.health = 0;
@@ -41,7 +39,6 @@ export async function fight(firstFighterHealth, secondFighterHealth, firstFighte
 
         const onCriticalSecondAttack = event => {
             allDownKeys.add(event.code);
-            if (allDownKeys.size != controls.PlayerTwoCriticalHitCombination.length) return;
             for (let code of controls.PlayerTwoCriticalHitCombination) {
                 if (!allDownKeys.has(code)) return;
             }
@@ -56,7 +53,6 @@ export async function fight(firstFighterHealth, secondFighterHealth, firstFighte
                 if (firstFighter.health - damage > 0) {
                     firstFighter.health -= damage;
                     healthBarfirstFighter.style.width = `${(firstFighter.health * 100) / firstFighterHealth}%`;
-                    console.log(firstFighter.health, damage, firstFighter.health - damage);
                 } else {
                     firstFighter.health = 0;
                     healthBarfirstFighter.style.width = `0%`;

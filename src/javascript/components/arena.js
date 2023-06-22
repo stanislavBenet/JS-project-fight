@@ -2,6 +2,7 @@ import createElement from '../helpers/domHelper';
 import { fight } from './fight';
 import { createFighterImage } from './fighterPreview';
 import { showWinnerModal } from './modal/winner';
+
 function createFighter(fighter, position) {
     const imgElement = createFighterImage(fighter);
     const positionClassName = position === 'right' ? 'arena___right-fighter' : 'arena___left-fighter';
