@@ -1,7 +1,7 @@
 import createElement from '../helpers/domHelper';
 import { fight } from './fight';
 import { createFighterImage } from './fighterPreview';
-import { showWinnerModal } from './modal/winner';
+import showWinnerModal from './modal/winner';
 
 function createFighter(fighter, position) {
     const imgElement = createFighterImage(fighter);

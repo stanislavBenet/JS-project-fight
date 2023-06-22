@@ -1,5 +1,20 @@
 import controls from '../../constants/controls';
-import _ from 'lodash';
+
+function random() {
+    return Math.floor(Math.random() * 2);
+}
+
+export function getHitPower(fighter) {
+    return fighter.attack * random();
+}
+
+export function getBlockPower(fighter) {
+    return fighter.defense * random();
+}
+
+export function getDamage(attacker, defender) {
+    return getHitPower(attacker) - getBlockPower(defender);
+}
 
 export async function fight(firstFighterHealth, secondFighterHealth, firstFighter, secondFighter) {
     return new Promise(resolve => {
@@ -14,7 +29,6 @@ export async function fight(firstFighterHealth, secondFighterHealth, firstFighte
             for (let code of controls.PlayerOneCriticalHitCombination) {
                 if (!allDownKeys.has(code)) return;
             }
-            console.log(checkTenSecFirst);
             if (checkTenSecFirst) {
                 checkTenSecFirst = !checkTenSecFirst;
                 setTimeout(() => (checkTenSecFirst = true), 10000);
@@ -26,7 +40,7 @@ export async function fight(firstFighterHealth, secondFighterHealth, firstFighte
                     secondFighter.health -= damage;
                     healthBarsecondFighter.style.width = `${(secondFighter.health * 100) / secondFighterHealth}%`;
                 } else {
-                    secondFighter.health = 0;
+                    secondFighter.health = secondFighter.health.set(0);
                     healthBarsecondFighter.style.width = `0%`;
                     resolve(firstFighter);
                 }
@@ -42,7 +56,6 @@ export async function fight(firstFighterHealth, secondFighterHealth, firstFighte
             for (let code of controls.PlayerTwoCriticalHitCombination) {
                 if (!allDownKeys.has(code)) return;
             }
-            console.log(checkTenSecSecond);
             if (checkTenSecSecond) {
                 checkTenSecSecond = !checkTenSecSecond;
                 setTimeout(() => (checkTenSecSecond = true), 10000);
@@ -129,16 +142,4 @@ export async function fight(firstFighterHealth, secondFighterHealth, firstFighte
         document.body.addEventListener('keydown', onCriticalSecondAttack, false);
         document.body.addEventListener('keyup', event => allDownKeys.delete(event.code));
     });
-}
-
-export function getDamage(attacker, defender) {
-    return getHitPower(attacker) - getBlockPower(defender);
-}
-
-export function getHitPower(fighter) {
-    return fighter.attack * _.random(1, 2);
-}
-
-export function getBlockPower(fighter) {
-    return fighter.defense * _.random(1, 2);
 }
